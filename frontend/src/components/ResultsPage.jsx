@@ -186,18 +186,13 @@ export default function ResultsPage({ results, videos, onReset }) {
 
   return (
     <div className="results-page">
-      <div className="results-top-bar">
-        <button className="back-btn" onClick={onReset}>
-          &larr; New Comparison
-        </button>
-      </div>
-
       <ScoreDisplay score={results.overall_score} />
 
       <div style={{display:'flex', gap:'32px', alignItems:'flex-start', justifyContent:'center', marginTop:'24px', marginBottom:'24px'}}>
         <VideoPlayer results={results} videos={videos} seekTime={seekTime} />
         <FeedbackPanel results={results} onSeek={setSeekTime} />
       </div>
+
 
       <TimelineHeatmap
         segments={results.segment_scores}

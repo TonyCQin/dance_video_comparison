@@ -13,7 +13,13 @@ export default function TimelineHeatmap({ segments, onSeek }) {
 
   const handleClick = (seg, idx) => {
     setSelected(idx === selected ? null : idx)
-    if (onSeek) onSeek(seg.start_time)
+    if (onSeek) onSeek({ 
+      ref: seg.start_time, 
+      att: seg.user_start_time,
+      end: seg.end_time,
+      attEnd: seg.user_end_time,
+      isSegment: true 
+    })
   }
 
   return (

@@ -20,8 +20,20 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>DanceCompare</h1>
-        <p className="subtitle">Compare your dance moves with AI-powered pose analysis</p>
+        <div className="header-content">
+          <div className="header-left">
+            {results && (
+              <button className="back-btn-top" onClick={handleReset}>
+                &larr; New Comparison
+              </button>
+            )}
+          </div>
+          <div className="header-center">
+            <h1>DanceCompare</h1>
+            <p className="subtitle">AI-powered pose analysis</p>
+          </div>
+          <div className="header-right"></div>
+        </div>
       </header>
       <main>
         {results ? (

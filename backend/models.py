@@ -22,6 +22,8 @@ class JointScore(BaseModel):
 class SegmentScore(BaseModel):
     start_time: float
     end_time: float
+    user_start_time: float  # Added for DTW alignment
+    user_end_time: float    # Added for DTW alignment
     score: float
     problem_joints: list[str]
 

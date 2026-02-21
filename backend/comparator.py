@@ -106,18 +106,29 @@ def compare_dances(
             seg_pair_scores = [pair_scores[i] for i, _, _ in seg_pairs]
             seg_score = float(np.mean(seg_pair_scores))
 
+            # Find matching timestamps in user video
+            user_indices = [ui for _, _, ui in seg_pairs]
+            u_start = user_poses[min(user_indices)].timestamp
+            u_end = user_poses[max(user_indices)].timestamp
+            
+            print(f"DEBUG: Segment {seg_start:.2f}s-{seg_end:.2f}s aligned to user video at {u_start:.2f}s-{u_end:.2f}s")
+
             # Find problem joints for this segment
             problem_joints = _find_problem_joints(
                 ref_poses, user_poses, seg_pairs, threshold=70
             )
         else:
             seg_score = 0.0
+            u_start = 0.0
+            u_end = 0.0
             problem_joints = []
 
         segment_scores.append(
             SegmentScore(
                 start_time=seg_start,
                 end_time=seg_end,
+                user_start_time=u_start,
+                user_end_time=u_end,
                 score=round(seg_score, 1),
                 problem_joints=problem_joints,
             )
