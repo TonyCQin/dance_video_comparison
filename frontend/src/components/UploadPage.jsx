@@ -54,6 +54,7 @@ export default function UploadPage({ onResults }) {
   const [attempt, setAttempt] = useState(null)
   const [loading, setLoading] = useState(false)
   const [statusMsg, setStatusMsg] = useState('')
+  const [progress, setProgress] = useState(0)
   const [error, setError] = useState('')
 
   const handleCompare = async () => {
@@ -61,6 +62,7 @@ export default function UploadPage({ onResults }) {
     setLoading(true)
     setError('')
     setStatusMsg('Uploading videos...')
+    setProgress(5)
 
     try {
       const formData = new FormData()
@@ -74,6 +76,7 @@ export default function UploadPage({ onResults }) {
 
       if (!res.ok) throw new Error('Upload failed')
       const { job_id } = await res.json()
+      setProgress(10)
 
       // Poll for status
       while (true) {
@@ -83,6 +86,7 @@ export default function UploadPage({ onResults }) {
 
         if (status.status === 'complete') {
           setStatusMsg('Fetching results...')
+          setProgress(100)
           const resultsRes = await fetch(`${API_BASE}/results/${job_id}`)
           const results = await resultsRes.json()
           onResults(results, { reference, attempt })
@@ -90,7 +94,12 @@ export default function UploadPage({ onResults }) {
         } else if (status.status === 'error') {
           throw new Error(status.message || 'Processing failed')
         } else {
-          setStatusMsg(status.message || 'Processing...')
+          const msg = status.message || ''
+          setStatusMsg(msg || 'Processing...')
+          
+          if (msg.includes('reference')) setProgress(25)
+          else if (msg.includes('attempt')) setProgress(60)
+          else if (msg.includes('Comparing')) setProgress(90)
         }
       }
     } catch (err) {
@@ -106,7 +115,7 @@ export default function UploadPage({ onResults }) {
         <div className="progress-section">
           <h2>Analyzing your dance...</h2>
           <div className="progress-bar-container">
-            <div className="progress-bar" />
+            <div className="progress-bar" style={{ width: `${progress}%`, transition: 'width 0.5s ease-out' }} />
           </div>
           <p className="progress-message">{statusMsg}</p>
         </div>

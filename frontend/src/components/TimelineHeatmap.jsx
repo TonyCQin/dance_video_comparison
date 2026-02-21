@@ -8,7 +8,7 @@ function scoreToColor(score) {
   return '#f87171'
 }
 
-export default function TimelineHeatmap({ segments, onSeek, currentTime }) {
+export default function TimelineHeatmap({ segments, onSeek }) {
   const [selected, setSelected] = useState(null)
 
   const handleClick = (seg, idx) => {
@@ -22,13 +22,10 @@ export default function TimelineHeatmap({ segments, onSeek, currentTime }) {
     })
   }
 
-  const totalTime = segments.length > 0 ? segments[segments.length - 1].end_time : 0
-  const markerPos = totalTime > 0 ? (currentTime / totalTime) * 100 : 0
-
   return (
     <div className="timeline-heatmap">
       <h3>Performance Timeline</h3>
-      <div className="heatmap-bar" style={{ position: 'relative' }}>
+      <div className="heatmap-bar">
         {segments.map((seg, i) => (
           <div
             key={i}
@@ -40,13 +37,6 @@ export default function TimelineHeatmap({ segments, onSeek, currentTime }) {
             {Math.round(seg.score)}
           </div>
         ))}
-        {/* Playback Indicator */}
-        <div 
-          className="heatmap-indicator" 
-          style={{ 
-            left: `${markerPos}%`,
-          }} 
-        />
       </div>
       {selected !== null && segments[selected] && (
         <div className="segment-details">
