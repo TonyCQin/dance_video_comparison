@@ -47,7 +47,11 @@ export default function TimelineHeatmap({ segments, onSeek }) {
           </span>
           {segments[selected].problem_joints.length > 0 && (
             <div className="problem-joints">
-              Needs work: {segments[selected].problem_joints.join(', ')}
+              Needs work: {
+                segments[selected].problem_joints
+                  .map(j => typeof j === 'object' && j.joint ? j.joint : j)
+                  .join(', ')
+              }
             </div>
           )}
         </div>
