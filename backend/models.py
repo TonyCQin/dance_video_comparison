@@ -25,7 +25,7 @@ class SegmentScore(BaseModel):
     user_start_time: float  # Added for DTW alignment
     user_end_time: float    # Added for DTW alignment
     score: float
-    problem_joints: list[str]
+    problem_joints: list[dict]  # Accepts list of objects with joint, mean, min_score, ref_frame
 
 
 class ComparisonResult(BaseModel):
@@ -36,6 +36,9 @@ class ComparisonResult(BaseModel):
     dtw_path: list[list[int]]                 # [[ref_idx, user_idx], ...]
     ref_fps: float
     user_fps: float
+    debug: dict = None  # Optional debug info
+    worst_moments: list[dict] = None  # List of worst moments globally
+    extended_moments: list[dict] = None  # Extended list of moments with error below threshold
 
 
 class JobStatus(BaseModel):
