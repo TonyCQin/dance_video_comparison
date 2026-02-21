@@ -29,8 +29,7 @@ python -m venv venv
 Download the MediaPipe pose model (one-time, ~5.6 MB):
 
 ```bash
-curl -L -o pose_landmarker_lite.task \
-  "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task"
+curl -L -o pose_landmarker_lite.task "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task"
 ```
 
 Start the backend:
