@@ -21,6 +21,10 @@ python3 -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
+If python3 doesn't work, use 
+```bash
+python -m venv venv
+```
 
 Download the MediaPipe pose model (one-time, ~5.6 MB):
 
