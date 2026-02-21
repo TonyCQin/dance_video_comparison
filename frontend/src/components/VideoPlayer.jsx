@@ -53,12 +53,45 @@ export default function VideoPlayer({ results, videos, seekTime }) {
   const refCanvasRef = useRef(null)
   const attCanvasRef = useRef(null)
   const animFrameRef = useRef(null)
+
   const [playing, setPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
 
-  const refUrl = videos.reference ? URL.createObjectURL(videos.reference) : null
-  const attUrl = videos.attempt ? URL.createObjectURL(videos.attempt) : null
+  const [refUrl, setRefUrl] = useState(null)
+  const [attUrl, setAttUrl] = useState(null)
+
+
+  useEffect(() => {
+    if (videos?.reference) {
+      const url = URL.createObjectURL(videos.reference)
+      setRefUrl(url)
+      return () => URL.revokeObjectURL(url)
+    } else setRefUrl(null)
+  }, [videos?.reference])
+
+  useEffect(() => {
+    if (videos?.attempt) {
+      const url = URL.createObjectURL(videos.attempt)
+      setAttUrl(url)
+      return () => URL.revokeObjectURL(url)
+    } else setAttUrl(null)
+  }, [videos?.attempt])
+
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        // Update internal canvas resolution to match CSS display size
+        entry.target.width = entry.contentRect.width
+        entry.target.height = entry.contentRect.height
+      }
+    })
+
+    if (refCanvasRef.current) observer.observe(refCanvasRef.current)
+    if (attCanvasRef.current) observer.observe(attCanvasRef.current)
+
+    return () => observer.disconnect()
+  }, []) // Run once on mount
 
   const getFrameIndex = useCallback((time, fps, maxFrames) => {
     return Math.min(Math.floor(time * fps), maxFrames - 1)
@@ -140,6 +173,10 @@ export default function VideoPlayer({ results, videos, seekTime }) {
   const handleTimeUpdate = () => {
     const t = refVideoRef.current?.currentTime || 0
     setCurrentTime(t)
+    // Sync attempt video with reference
+    if (attVideoRef.current && Math.abs(attVideoRef.current.currentTime - t) > 0.1) {
+      attVideoRef.current.currentTime = t
+    }
   }
 
   const handleLoadedMetadata = () => {
@@ -183,7 +220,7 @@ export default function VideoPlayer({ results, videos, seekTime }) {
       <div className="video-container">
         <h4>Your Attempt</h4>
         {attUrl && (
-          <video ref={attVideoRef} src={attUrl} muted playsInline onEnded={handleEnded} />
+          <video ref={attVideoRef} src={attUrl} muted playsInline onTimeUpdate={handleTimeUpdate} onEnded={handleEnded} />
         )}
         <canvas ref={attCanvasRef} className="skeleton-canvas" />
       </div>
