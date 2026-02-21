@@ -183,13 +183,19 @@ function FeedbackPanel({ results, onSeek }) {
 
 export default function ResultsPage({ results, videos, onReset }) {
   const [seekTime, setSeekTime] = useState(null)
+  const [currentTime, setCurrentTime] = useState(0)
 
   return (
     <div className="results-page">
       <ScoreDisplay score={results.overall_score} />
 
       <div style={{display:'flex', gap:'32px', alignItems:'flex-start', justifyContent:'center', marginTop:'24px', marginBottom:'24px'}}>
-        <VideoPlayer results={results} videos={videos} seekTime={seekTime} />
+        <VideoPlayer 
+          results={results} 
+          videos={videos} 
+          seekTime={seekTime} 
+          onTimeUpdate={setCurrentTime}
+        />
         <FeedbackPanel results={results} onSeek={setSeekTime} />
       </div>
 
@@ -197,6 +203,7 @@ export default function ResultsPage({ results, videos, onReset }) {
       <TimelineHeatmap
         segments={results.segment_scores}
         onSeek={(t) => setSeekTime(t)}
+        currentTime={currentTime}
       />
 
       <ScoreDebugPanel results={results} />
