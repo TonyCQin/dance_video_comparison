@@ -103,15 +103,13 @@ export default function ResultsPage({ results, videos, onReset }) {
 
   return (
     <div className="results-page">
-      <div className="results-top-bar">
-        <button className="back-btn" onClick={onReset}>
-          &larr; New Comparison
-        </button>
-      </div>
-
       <ScoreDisplay score={results.overall_score} />
 
-      <VideoPlayer results={results} videos={videos} seekTime={seekTime} />
+      <VideoPlayer 
+        results={results} 
+        videos={videos} 
+        seekTime={seekTime}
+      />
 
       <TimelineHeatmap
         segments={results.segment_scores}
