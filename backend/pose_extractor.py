@@ -69,17 +69,20 @@ def _normalize_landmarks(raw_landmarks) -> list[Landmark]:
     right_hip_idx = 24
     left_hip = raw_landmarks[left_hip_idx]
     right_hip = raw_landmarks[right_hip_idx]
-    mid_x = (left_hip.x + right_hip.x) / 2
-    mid_y = (left_hip.y + right_hip.y) / 2
-    mid_z = (left_hip.z + right_hip.z) / 2
+    # mid_x = (left_hip.x + right_hip.x) / 2
+    # mid_y = (left_hip.y + right_hip.y) / 2
+    # mid_z = (left_hip.z + right_hip.z) / 2
 
     landmarks = []
     for lm in raw_landmarks:
         landmarks.append(
             Landmark(
-                x=lm.x - mid_x,
-                y=lm.y - mid_y,
-                z=lm.z - mid_z,
+                # x=lm.x - mid_x,
+                # y=lm.y - mid_y,
+                # z=lm.z - mid_z,
+                x=lm.x,
+                y=lm.y,
+                z=lm.z,
                 visibility=getattr(lm, 'visibility', 1.0) or 1.0,
             )
         )

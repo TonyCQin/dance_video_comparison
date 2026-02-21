@@ -11,15 +11,13 @@ const CONNECTIONS = [
 function drawSkeleton(ctx, keypoints, width, height, color, problemColor) {
   if (!keypoints || keypoints.length === 0) return
 
-  // Keypoints are normalized relative to hip midpoint, need to un-normalize for display
-  // Center at middle of canvas and scale
-  const scale = Math.min(width, height) * 0.8
+  // Center at middle of canvas
   const cx = width / 2
   const cy = height / 2
 
   const toPixel = (kp) => ({
-    x: cx + kp[0] * scale,
-    y: cy + kp[1] * scale,
+    x: kp[0] * width,
+    y: kp[1] * height,
   })
 
   // Draw connections
@@ -81,14 +79,21 @@ export default function VideoPlayer({ results, videos, seekTime }) {
   useEffect(() => {
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        // Update internal canvas resolution to match CSS display size
-        entry.target.width = entry.contentRect.width
-        entry.target.height = entry.contentRect.height
+        // Find the corresponding canvas and match its size to the video
+        const isRef = entry.target === refVideoRef.current
+        const canvas = isRef ? refCanvasRef.current : attCanvasRef.current
+        if (canvas) {
+          canvas.width = entry.target.clientWidth
+          canvas.height = entry.target.clientHeight
+          // Also set the CSS size so it overlays perfectly
+          canvas.style.width = `${entry.target.clientWidth}px`
+          canvas.style.height = `${entry.target.clientHeight}px`
+        }
       }
     })
 
-    if (refCanvasRef.current) observer.observe(refCanvasRef.current)
-    if (attCanvasRef.current) observer.observe(attCanvasRef.current)
+    if (refVideoRef.current) observer.observe(refVideoRef.current)
+    if (attVideoRef.current) observer.observe(attVideoRef.current)
 
     return () => observer.disconnect()
   }, []) // Run once on mount
@@ -201,28 +206,30 @@ export default function VideoPlayer({ results, videos, seekTime }) {
 
   return (
     <div className="video-player">
-      <div className="video-container">
-        <h4>Reference</h4>
-        {refUrl && (
-          <video
-            ref={refVideoRef}
-            src={refUrl}
-            muted
-            playsInline
-            onTimeUpdate={handleTimeUpdate}
-            onLoadedMetadata={handleLoadedMetadata}
-            onEnded={handleEnded}
-          />
-        )}
-        <canvas ref={refCanvasRef} className="skeleton-canvas" />
-      </div>
+      <div className="video-row">
+        <div className="video-container">
+          <h4>Reference</h4>
+          {refUrl && (
+            <video
+              ref={refVideoRef}
+              src={refUrl}
+              muted
+              playsInline
+              onTimeUpdate={handleTimeUpdate}
+              onLoadedMetadata={handleLoadedMetadata}
+              onEnded={handleEnded}
+            />
+          )}
+          <canvas ref={refCanvasRef} className="skeleton-canvas" />
+        </div>
 
-      <div className="video-container">
-        <h4>Your Attempt</h4>
-        {attUrl && (
-          <video ref={attVideoRef} src={attUrl} muted playsInline onTimeUpdate={handleTimeUpdate} onEnded={handleEnded} />
-        )}
-        <canvas ref={attCanvasRef} className="skeleton-canvas" />
+        <div className="video-container">
+          <h4>Your Attempt</h4>
+          {attUrl && (
+            <video ref={attVideoRef} src={attUrl} muted playsInline onTimeUpdate={handleTimeUpdate} onEnded={handleEnded} />
+          )}
+          <canvas ref={attCanvasRef} className="skeleton-canvas" />
+        </div>
       </div>
 
       <div className="playback-controls">
